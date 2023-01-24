@@ -6,13 +6,12 @@ import time
 
 
 
+
 class Tree():
-    def __init__(self, root: Node, children: list):
-        self.root = root # Node object
-        self.children = children # Node objects
+    def __init__(self):
         self.searches = 0
     
-    def tree_search(self) -> Action:
+    def tree_search(self, node: Node) -> Action:
         '''
         Decides which action to make by using upper confidence tree
         
@@ -28,7 +27,7 @@ class Tree():
         while True:
             n += 1
             # choose a node to investigate
-            chosen_node = self.select_node(self.root)
+            chosen_node = self.select_node(node)
             
             # simulate the value of a random walk starting from chosen node
             value = chosen_node.simulate_result()
@@ -37,94 +36,37 @@ class Tree():
             self.backpropagation(chosen_node, value)
             
             # break loop if time limit is reached
-            if time.time() > timeout or n > 10000:
+            if time.time() > timeout or n > 100:
                 break
         
         # choose highest scroding node after investigation
-        chosen_node = self.choose_action()
+        chosen_node = self.choose_action(node)
+        
+        if len(chosen_node.children) == 0 and not chosen_node.is_leaf:
+            chosen_node.get_children() 
 
-        # set node of chosen action as root and prune tree
-        self.prune_tree(chosen_node)
+        return chosen_node  
 
-        return chosen_node.former_action    
-    
-    
-    
-    def prune_tree(self, node: Node) -> None:
-        '''
-        updates root and children of tree after taking an action
         
-        node: Node refering to the action taken
-        '''
-        
-        # list of children nodes that are still relevant
-        kept_children = self.check_relevant_nodes([], node)
-        
-        # set node as root
-        self.root = node
-        
-        # set children to children list after pruning
-        self.children = kept_children
-        
-        
-    def check_relevant_nodes(self, kept_children: list, node: Node) -> list:
-        '''
-        Given a tree this method makes a list of children nodes that are related to the input node
-        
-        :param kept children: List of node related to the input node
-        :paran node: Node used as root node whos descendants are searched
-        
-        return: list of nodes
-        '''
-        
-        # create list of nodes with input node as parent
-        next_layer = [child for child in self.children if child.parent == node]
-        
-        for child in next_layer:
-            # add child to list of children to keep
-            kept_children.append(child)
-            
-            # start recursion if child node is not final
-            if not child.is_leaf:
-                self.check_relevant_nodes(kept_children, child)
-                
-        return kept_children
-        
-    def choose_action(self)-> Node:
+    def choose_action(self, node)-> Node:
         '''
         takes an action based on it's current mean value
         
         return: highest scoring node
         '''
-        # create a list of next layer nodes
-        next_layer = [child for child in self.children if child.parent == self.root]
-        
-        # get values of those nodes
-        values = np.array([sub_node.value for sub_node in next_layer])
-        
-        # get their exploration values
-        explorations = np.array([sub_node.exploration for sub_node in next_layer])
-        
-        # calculate mean by value and amount of exploration
-        mean_values = values / explorations
-        
+
+        mean_values = []
+        for child in node.children:
+            if child.exploration != 0:
+                mean_values.append(child.value / child.exploration)
+            else:
+                mean_values.append(0)
+
         # grab choose node by highest mean value
         best_action_index = np.argmax(mean_values)
-        chosen_node = next_layer[best_action_index]
+        chosen_node = node.children[best_action_index]
         
         return chosen_node
-     
-    def expand_tree(self, node: Node):
-        '''
-        adds another layer to the tree by expanding a specific node
-        
-        :param node: Node chosenfor expansion
-        '''
-        
-        # add children to node if no children available and node is not final
-        if len(node.children) == 0 and node.is_leaf is False:
-            self.children = self.children + node.get_children()
-
             
             
     def select_node(self, node: Node)-> Node:
@@ -137,25 +79,23 @@ class Tree():
         '''
         
         self.searches += 1
-        # get child layer
-        next_layer = [child for child in self.children if child.parent == node]
-
         # check for unexplored nodes
-        exploration_tracker = [sub_node.exploration for sub_node in next_layer]
+        exploration_tracker = [sub_node.exploration for sub_node in node.children]
 
         if 0 in exploration_tracker:
             # randomly pick one of the unknown nodes
             unexplored = np.where(np.array(exploration_tracker) == 0)[0]
             action_index = np.random.choice(unexplored)
-            chosen_node = next_layer[action_index]
+            chosen_node = node.children[action_index]
 
         # check nodes for highest ucb value
         else:
-            valuable_nodes = self.ucb(next_layer)
+            valuable_nodes = self.ucb(node.children)
             action_index = np.random.choice(valuable_nodes)
-            potential_node = next_layer[action_index]
+            potential_node = node.children[action_index]
             
-            self.expand_tree(potential_node)
+            if len(potential_node.children) == 0 and potential_node.is_leaf is False:
+                potential_node.get_children()
             
             # return node if it is a leaf 
             if potential_node.is_leaf:
@@ -177,10 +117,18 @@ class Tree():
         return: list of (equally) high rated nodes
         '''
         # prepare data
-        values = np.array([sub_node.value for sub_node in layer])
-        explorations = np.array([sub_node.exploration for sub_node in layer])
-        mean_values = values / explorations
-        mean_norm = self.normalize_vector(mean_values)
+        mean_values = []
+        explorations = []
+        for child in layer:
+            if child.exploration == 0:
+                print("0 in ucb")
+            else:
+                explorations.append(child.exploration)
+            if child.exploration != 0:
+                mean_values.append(child.value / child.exploration)
+            else:
+                mean_values.append(0)
+        mean_norm = self.normalize_vector(np.array(mean_values))
         
         # ucb calculation
         ucb_exploration = UCB_COEFFICIENT * np.sqrt(np.log(self.searches)/explorations)
@@ -207,7 +155,7 @@ class Tree():
                 norm_vector = vector / vector[0]
                 
         except Exception as err_msg:
-            print("Error in bandit.normalize_vector --> {}".format(err_msg))
+            print(f"Error in tree.normalize_vector --> {err_msg}\nvector = {vector}")
         else:
             return norm_vector 
         

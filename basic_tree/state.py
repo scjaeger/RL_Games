@@ -1,10 +1,10 @@
 from basic_tree.action import Action
-from basic_tree.constants import MAX_MASS
+from basic_tree.constants import MASS_LIMIT
 
 
 class State():
     def __init__(self, actions, mass = 0, value = 0):
-        self.max_mass = MAX_MASS
+        self.max_mass = MASS_LIMIT
         self.mass = mass
         self.value = value
         self.actions = actions

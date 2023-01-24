@@ -1,6 +1,7 @@
 from basic_tree.state import State
 from basic_tree.action import Action
 from random import choice
+import treelib
 
 class Node():
     def __init__(self, parent, former_action: Action, state: State):
@@ -13,7 +14,7 @@ class Node():
         self.is_leaf = False
     
     # extra function to avoid recursion that creates full tree
-    def get_children(self) -> list:
+    def get_children(self):
         '''
         adds child layer to a given node
         
@@ -39,7 +40,6 @@ class Node():
                 
         # add children to node and return list
         self.children = children
-        return children
             
             
     def simulate_result(self) -> float:
@@ -62,4 +62,11 @@ class Node():
           
         return simulation_state.value
         
+    
+    def show_tree(self):
+        show_tree = treelib.Tree()
+        show_tree.create_node("Root", "root")
+        for i,child in enumerate(self.children):
+            show_tree.create_node(f"expl: {child.exploration}, mass: {child.state.mass}", f"child{i}", parent = "root")
+        show_tree.show()
 
