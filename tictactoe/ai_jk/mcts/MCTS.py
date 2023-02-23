@@ -8,7 +8,9 @@ class MCTS():
 
     def do_mcts(self, state):
 
-        if (is_initial_root_state(state))
+        if (self.is_initial_root_state(state)):
+            pass
+
         t = time.process_time()
         elapsed_time = 0
 
@@ -17,4 +19,11 @@ class MCTS():
 
 
     def is_initial_root_state(self, state):
-        if 
+        pass
+
+    def find_state_in_tree(self, state):
+        pass
+
+    def get_best_child(self):
+        pass
+
