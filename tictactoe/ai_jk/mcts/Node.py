@@ -34,8 +34,11 @@ class Node:
     def get_UCT_score(self):
         exploitation_score = self.value / self.parent.visits
         exploration_score = EXPLORATION_VALUE * math.sqrt((math.log(self.parent.visits)/self.visits))
-        UCT_score = exploitation_score + exploration_score
-        return UCT_score
+        return exploitation_score + exploration_score
+        
+    
+    def get_exploitation_score(self):
+        return self.value / self.parent.visits
 
 if __name__ == "__main__":
     root = Node(None, None, None)
