@@ -1,5 +1,10 @@
 from ai_jk.mcts.Node import Node
-from ai_jk.phases.selection import get_uct_scores
+from ai_jk.phases.selection import start_selection_phase, get_uct_scores
+
+
+def test_start_selection_phase():
+    node = Node(None, None, None)
+    assert start_selection_phase(node) == node
 
 def test_get_uct_scores():
     root = Node(None, None, None)

@@ -18,7 +18,8 @@ def test_get_best_child():
     root.children.append(node3)
     root.children.append(node4)
 
-    mcts = MCTS(root, None)
+    mcts = MCTS()
+    mcts.root = root
     
     assert mcts.get_best_child().state == 1
 

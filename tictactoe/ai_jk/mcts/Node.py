@@ -16,10 +16,10 @@ class Node:
     
 
     def change_player(self):
-        if (self.player == 1):
-            return 2
+        if (self.player):
+            return False
         else:
-            return 1
+            return True
 
     '''
     def is_fully_expanded(self) -> bool:

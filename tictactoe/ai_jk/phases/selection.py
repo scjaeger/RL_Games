@@ -1,8 +1,9 @@
 from ai_jk.mcts.Node import Node
 
 
+
 def start_selection_phase(node):
-    while(not node.is_fully_expanded):
+    while(node.is_fully_expanded):
         scores = get_uct_scores(node)
         index = get_best_uct_node_index(scores)
         node = node.children[index]    

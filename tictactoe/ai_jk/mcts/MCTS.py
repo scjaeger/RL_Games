@@ -1,21 +1,33 @@
 import time
 from ai_jk.mcts.Node import Node
+from ai_jk.phases.selection import start_selection_phase
+from ai_jk.phases.expansion import start_expansion_phase
+from ai_jk.phases.simulation import start_simulation_phase
+from ai_jk.phases.backpropagation import start_backpropagation_phase
+
+from game.state import State
 
 class MCTS():
-    def __init__(self, root, player):
-        self.root = root
-        self.player = player
+    def __init__(self):
+        self.root = None
 
     def do_mcts(self, state):
-
-        if (self.is_initial_root_state(state)):
-            pass
+        root = Node(None, state, None)
 
         t = time.process_time()
         elapsed_time = 0
 
         while (elapsed_time <= 1):
+            node = start_selection_phase(root)
+            node = start_expansion_phase(node)
+            node, state = start_simulation_phase(node)
+            start_backpropagation_phase(node, state)
+
             elapsed_time = time.process_time() - t
+
+        node = self.get_best_child()
+
+        return node.state
 
 
     def is_initial_root_state(self, state):
@@ -39,22 +51,14 @@ class MCTS():
 
 
 if __name__ == "__main__":
-    root = Node(None, None, None)
-    node1 = Node(root, 1, None)
-    node2 = Node(root, 2, None)
-    node3 = Node(root, 2, None)
-    node4 = Node(root, 2, None)
-    
-    root.visits = 4
-    node1.visits = node2.visits = node3.visits = node4.visits = 1
-    node1.value = 2
-    node2.value = node3.value = node4.value = 1
+    import numpy as np
+    state = State(player = 1)
+    state.board = np.array([
+        [1, 0, 0],
+        [2, 0, 0],
+        [0, 0, 0],
+    ])
 
-    root.children.append(node1)
-    root.children.append(node2)
-    root.children.append(node3)
-    root.children.append(node4)
-
-    mcts = MCTS(root, None)
-    
-    print(mcts.get_best_child())
+    mcts = MCTS()
+    state = mcts.do_mcts(state)
+    print(state)
