@@ -10,7 +10,7 @@ def start_simulation_phase(node):
 
 
 def is_leaf(node):
-    if (node.state.is_final_state()):
+    if (node.state.check_game_end()):
         node.is_leaf = True
         node.subtree_fully_expanded = True
         return True
@@ -21,12 +21,12 @@ def is_leaf(node):
 def do_simulation(node):
     state = node.state
     
-    while(not state.is_final_state()):
+    while(not state.check_game_end()):
         actions = state.get_actions()
         max_value = len(actions) - 1
         randint = random.randint(0, max_value)
         action = actions[randint]     
-        state = state.get_next_state(state, action)
+        state = state.perform_action(action)
 
     return state
 
