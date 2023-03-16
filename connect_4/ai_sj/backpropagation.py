@@ -33,6 +33,7 @@ def backpropagate(node: Node, winner: int) -> None:
             node = node.parent
             
         node.times_tested += 1
+        node.explored = update_exploration_status(node)
         
     except Exception as error:
         print(f"Error in backpropagation.backpropagate --> {error}")

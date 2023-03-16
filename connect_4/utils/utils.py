@@ -34,15 +34,15 @@ def plot_board(players: "list[str]", board: np.array, ax: plt.axes):
 def make_bar_plot(game_stats: dict, stat_name: str, ax: plt.axes):
     
     ax.set_title(stat_name)
-    for i in [1, 2]:
-        if i == 1:
+    for i, color, shift in zip([1, 2], ["red", "blue"], [- 0.2, 0.2]):
+        if i == 2:
             color = "red"
         else:
             color = "blue"
             
         stat = game_stats[i][stat_name]
         X_axis = np.arange(len(stat))
-        ax.bar(X_axis - 0.2, stat, 0.4, label = game_stats[i]["name"], color = color)
+        ax.bar(X_axis + shift, stat, 0.4, label = game_stats[i]["name"], color = color, alpha = 0.5)
         
     ax.legend()
 
