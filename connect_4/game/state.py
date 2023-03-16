@@ -59,7 +59,7 @@ class State():
 
     def is_equal(self, state) -> bool:
         
-        if type(state) == State:
+        if isinstance(state, State):
         
             board_check = np.array_equal(self.board, state.board)
             player_check = self.player == state.player
@@ -112,6 +112,7 @@ class State():
         if self.winner:
             return True
         elif 0 not in self.board:
+            self.winner = 0
             return True
         else:
             return False
@@ -135,19 +136,3 @@ class State():
         else:
             print(f"Error in State.change_player --> self.player = {self.player}, should be in [1, 2]")
             return False
-    
-    
-if __name__ == "__main__":
-    state = State(player = 1)
-    
-    state.board = np.array([
-        [0, 0, 0, 0, 0, 0, 0,],
-        [0, 0, 0, 0, 0, 0, 0,],
-        [0, 0, 0, 0, 0, 0, 0,],
-        [0, 1, 0, 0, 0, 0, 0,],
-        [0, 1, 0, 0, 0, 0, 0,],
-        [0, 1, 0, 0, 0, 0, 0,],
-    ])
-    state = state.perform_action(1)
-    print(state.board)
-    print(state.winner)

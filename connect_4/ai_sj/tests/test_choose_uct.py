@@ -16,9 +16,10 @@ def test_choose_uct_pick_first():
     
     root.children[0].times_won += 1
     
-    new_node = choose_uct(root, 1)
+    new_node = choose_uct(root)
 
     assert new_node == root.children[0]
+    assert isinstance(new_node, Node)
     
 def test_choose_uct_pick_fewest_tests():
     state = State(player = 1)
@@ -33,8 +34,9 @@ def test_choose_uct_pick_fewest_tests():
         root.children.append(child)
     
     root.children[2].times_tested -= 1
+    root.times_tested -= 1
     
-    new_node = choose_uct(root, 1)
+    new_node = choose_uct(root)
 
     assert new_node == root.children[2]
     assert type(new_node) == Node
@@ -43,4 +45,8 @@ def test_choose_uct_no_children():
     state = State(player = 1)
     root = Node(None, state)
 
-    assert choose_uct(root, 1) is False
+    assert choose_uct(root) is False
+
+
+if __name__ == "__main__":
+    test_choose_uct_pick_first()

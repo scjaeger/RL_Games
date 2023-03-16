@@ -21,16 +21,9 @@ def test_select_node_forced_random():
     
     new_node = select_node(root)
     
-    new_board = np.array([
-        [1, 2, 1, 2, 1, 2, 1],
-        [1, 2, 1, 2, 1, 2, 1],
-        [2, 1, 2, 1, 2, 1, 2],
-        [2, 1, 2, 1, 2, 1, 2],
-        [1, 2, 1, 2, 1, 2, 1],
-        [1, 2, 1, 2, 1, 2, 1],
-    ])
+    new_state = state.perform_action(6)
     
-    assert np.array_equal(new_node.state.board, new_board)
+    assert new_state.is_equal(new_node.state)
     assert new_node.parent == root
     assert new_node.state.player == 1
     
@@ -102,80 +95,53 @@ def test_select_node_fully_explored():
     assert select_node(root) is False
     
     
-def test_select_node_obvious_choice():
+def test_select_node_multi_layer():
     state = State(player = 1)
     
     state.board = np.array([
-
-        [0, 0, 2, 2],
-        [1, 0, 1, 1],
+        [0, 0, 1, 2, 2, 1, 1],
+        [0, 0, 2, 1, 1, 2, 2],
+        [2, 1, 2, 2, 2, 1, 1],
+        [2, 1, 2, 1, 1, 2, 2],
+        [1, 2, 1, 2, 2, 1, 1],
+        [1, 1, 2, 2, 1, 2, 2],
     ])
     
     root = Node(None, state)
-    
-    for i in range(100):
+        
+    for _ in range(17):
         node = select_node(root)
         if node:
             winner = simulate(node.state)
             backpropagate(node, winner)
+    
             
-            # if node.state.board[1, 1] == 1:
-            #     print(i)
-            #     print(node.state.board)
+    assert len(root.children) == 2
+    
+    winner = 0
+    for layer1_node in root.children:
+        assert len(layer1_node.children) == 2
+        for layer2_node in layer1_node.children:
+            if 1 in [layer2_node.state.board[0, 0], layer2_node.state.board[0, 1]]:
+                assert len(layer2_node.children) == 1
+            elif 1 in [layer2_node.state.board[1, 0], layer2_node.state.board[1, 1]]:
+                assert len(layer2_node.children) == 2
             
-            # depth = 0
-            # while node.parent:
-            #     depth += 1
-            #     node = node.parent
-            # print(f"depth {depth}")
-            
-        else:
-            print(f"break at {i}")
-            break
+            for layer3_node in layer2_node.children:
+                if layer3_node.state.board[0, 0] == 2 and layer3_node.state.board[1, 0] == 2:
+                    winner += 1
+                    assert layer3_node.explored
+                    assert layer3_node.state.winner == 2
+                else:
+                    assert len(layer3_node.children) == 1
+                    for layer4_node in layer3_node.children:
+                        assert layer4_node.explored
+                        assert layer4_node.state.winner == 0
+                        
+    assert winner == 1
+    assert select_node(root) is False
+    
 
-    for child in root.children:
-        print(f"player: {child.state.player}")
-        print(f"layer 1: {child.times_won/child.times_tested}")
-        print(child.state.board)
-        print("\n")
-        
-        for grandchild in child.children:
-            print(f"player: {grandchild.state.player}")
-            print(f"layer 2: {grandchild.times_won/grandchild.times_tested}")
-            print(grandchild.state.board)
-            print("\n")
-        
-
-
-
-def test_select_node_multi_layers():
-    
-    state = State(player = 1)
-    
-    root = Node(None, state)
-    
-    
-        
-    for _ in range(len(state.get_actions())):
-        layer1_child = select_node(root)
-        # layer1_child.times_won = np.random.randint(0, 2)
-        layer1_child.times_tested = 1
-        root.times_tested += 1
-     
-    root.children[0].times_won += 1
-    
-    print([child.times_tested for child in root.children])
-    
-    layer2_child = select_node(root)
-    layer2_child.times_tested += 1
-    layer2_child.times_won += 1
-    root.children[0].times_won += 1
-    
-    print(layer2_child.state.board)
-    print(select_node(root).state.board)
-
-
-    # print(len(root.children))
 
 if __name__ == "__main__":
-    test_select_node_obvious_choice()
+    test_select_node_multi_layer()

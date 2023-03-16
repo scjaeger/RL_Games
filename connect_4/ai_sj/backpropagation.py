@@ -1,11 +1,12 @@
 from game.node import Node
+from utils.utils import get_valid_children
 
 def update_exploration_status(node: Node)-> bool:
     try:
         if node.state.winner or node.state.game_over:
             return True
         else:
-            children = [child for child in node.children if not child.explored]
+            children = get_valid_children(node)
             if node.edges or children:
                 return False
             else:

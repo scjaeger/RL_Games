@@ -19,6 +19,8 @@ def get_winning_child(root: Node) -> Node:
         
     return None
 
+
+
 def counter_opponent(root: Node) -> "list[Node]":
 
     possible_children = []
@@ -47,6 +49,7 @@ def choose_by_mean(children: "list[Node]") -> Node:
     
     return children[top_index]
 
+
 def get_fav_child(root: Node) -> Node:
     
     try:
@@ -58,8 +61,7 @@ def get_fav_child(root: Node) -> Node:
         
         else:
             children = counter_opponent(root)
-            
-            print(f"possible nodes: {len(children)}")
+
             top_node = choose_by_mean(children)
             
             return top_node
@@ -88,8 +90,6 @@ def set_root(node: Node, state: State) -> Node:
 def mcts(node: Node, state: State, calc_time: float = 1.0, safety_factor: float = 0.99) -> Node:
 
     root = set_root(node, state)
-
-    print(f"edges {root.edges}")
     
     start_time = time.time()
     
@@ -101,42 +101,62 @@ def mcts(node: Node, state: State, calc_time: float = 1.0, safety_factor: float 
 
         if node:
             winner = simulate(node.state)
-            backpropagate(node, winner, root.state.player)
+            backpropagate(node, winner)
         
         if not get_valid_children(root) or time.time() - start_time > calc_time * safety_factor or loops > 20000:
             break
         
     top_node = get_fav_child(root)
+    # print(f"top node: {len(top_node.children)} children")
     time_left = calc_time - (time.time() - start_time)
     stats = {
         "unexplored children": len(get_valid_children(root)),
         "time left": time_left,
         "loops": loops
     }
-    # print(f"children: {len(root.children)}")
-    # print(f"times_tested: {[child.times_tested for child in root.children]}")
-    # print(f"times_won: {[child.times_won for child in root.children]}")
-    # print(f"top node: children {len(top_node.children)}")
     
     return top_node, stats
-    
 
         
 if __name__ == "__main__":
-    
     state = State(player = 1)
-    root = Node(None, None)
+    
+    state.board = np.array([
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 1, 1, 2, 2, 2],
+            ])
+    
+    # state.board = np.array([
+    #         [0, 0, 1, 2, 2, 1, 1],
+    #         [0, 0, 2, 1, 1, 2, 2],
+    #         [2, 1, 2, 2, 2, 1, 1],
+    #         [2, 1, 2, 1, 1, 2, 2],
+    #         [1, 2, 1, 2, 2, 1, 1],
+    #         [1, 1, 2, 2, 1, 2, 2],
+    #         ])
+    
+    root = Node(None, state)
+    
+    node, _ = mcts(root, state)
+    
+    print("\n", f"ROOT --> {len(node.parent.children)} children")
+    for child in node.parent.children:
+        print("\n")
+        print(f"timeswon: {child.times_won}")
+        print(f"times_tested: {child.times_tested}")
+        print(f"{len(child.children)} children")
+        print(child.state.board)
 
-    for i in range(100):
-        root, stats = mcts(root, state)
-        state = root.state
-        if state.game_over:
-            break
-        
-        action = random.choice(state.get_actions())
-        state = state.perform_action(action)
-        if state.game_over:
-            break
-        
-    print(state.board)
-        
+    
+    
+    print("\n", f"NODE --> {len(node.children)} children")
+    for child in node.children:
+        print("\n")
+        print(f"timeswon: {child.times_won}")
+        print(f"times_tested: {child.times_tested}")
+        print(f"{len(child.children)} children")
+        print(child.state.board)

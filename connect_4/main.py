@@ -20,17 +20,17 @@ if __name__ == "__main__":
     # shuffle players to randomize start
     players = [name_1, name_2]
     random.shuffle(players)
-    print(f"{players[0]} starts marked as {state.player}")
+    print(f"{players[0]} starts marked as {state.change_player()}")
 
     game_stats = {
         1: {
-            "name": players[0],
+            "name": players[1],
             "unexplored nodes": [],
             "time left": [],
             "loops": []
         },
         2: {
-            "name": players[1],
+            "name": players[0],
             "unexplored nodes": [],
             "time left": [],
             "loops": []
@@ -74,8 +74,6 @@ if __name__ == "__main__":
                 state = state.perform_action(action)            # <-- Enter algorithm here
                 
                 plot_turn(state, game_stats, round)
-            
-            
             
             if state.game_over:
                 break

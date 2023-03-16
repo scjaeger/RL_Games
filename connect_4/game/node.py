@@ -10,4 +10,4 @@ class Node():
         
         self.times_tested = 0
         self.times_won = 0
-        self.explored = False if self.edges else True
+        self.explored = False if not self.state.game_over else True

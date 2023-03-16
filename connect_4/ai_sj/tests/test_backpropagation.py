@@ -1,6 +1,7 @@
 from game.state import State
 from game.node import Node
 from ai_sj.backpropagation import backpropagate
+from ai_sj.mcts import counter_opponent
 import numpy as np
 
 def test_backpropagate_single_layer():
@@ -99,6 +100,7 @@ def test_backpropagate_multi_children():
     root = Node(None, state)
     
     first_layer_child_1 = Node(root, state.perform_action(0))
+    root.children.append(first_layer_child_1)
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 0, 0, 0, 0, 0],
@@ -115,6 +117,7 @@ def test_backpropagate_multi_children():
     assert first_layer_child_1.times_won == 1
     
     first_layer_child_2 = Node(root, state.perform_action(1))
+    root.children.append(first_layer_child_2)
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 0, 0, 0, 0, 0],
@@ -136,6 +139,7 @@ def test_backpropagate_multi_children():
     assert first_layer_child_2.times_won == 0     
         
     second_layer_child_1_1 = Node(first_layer_child_1, first_layer_child_1.state.perform_action(4))
+    first_layer_child_1.children.append(second_layer_child_1_1)
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 0, 0, 0, 0, 0],
@@ -160,6 +164,7 @@ def test_backpropagate_multi_children():
     assert second_layer_child_1_1.times_won == 1
         
     second_layer_child_2_1 = Node(first_layer_child_2, first_layer_child_2.state.perform_action(0))
+    first_layer_child_2.children.append(second_layer_child_2_1)
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 0, 0, 0, 0, 0],
@@ -192,6 +197,7 @@ def test_backpropagate_multi_children():
     
     
     second_layer_child_2_2 = Node(first_layer_child_2, first_layer_child_2.state.perform_action(6))
+    first_layer_child_2.children.append(second_layer_child_2_2)
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 0, 0, 0, 0, 0],
@@ -224,6 +230,7 @@ def test_backpropagate_multi_children():
     assert second_layer_child_2_2.times_won == 1
     
     third_layer_child_2_2_1 = Node(second_layer_child_2_2, second_layer_child_2_2.state.perform_action(2))
+    second_layer_child_2_2.children.append(third_layer_child_2_2_1)
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 0, 0, 0, 0, 0],
         # [0, 0, 1, 0, 0, 0, 0],
@@ -258,7 +265,12 @@ def test_backpropagate_multi_children():
     assert second_layer_child_2_2.times_won == 1
     assert third_layer_child_2_2_1.times_won == 1
     
+    assert third_layer_child_2_2_1.state.winner == 1
+    # assert len(counter_opponent(first_layer_child_2)) == 1
     
+    print(first_layer_child_2.state.player)
+
+    print(third_layer_child_2_2_1.state.player)
     
 def test_backpropagate_draw():
     state = State(player = 2)

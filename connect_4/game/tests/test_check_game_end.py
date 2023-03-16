@@ -9,9 +9,12 @@ def test_check_game_end_start():
 def test_check_game_end_full():
     state = State()
     state.board = np.array([
-        [1, 2, 1],
-        [2, 2, 1],
-        [2, 1, 2]
+        [1, 2, 1, 2, 1, 2, 1],
+        [1, 2, 1, 2, 1, 2, 1],
+        [2, 1, 2, 1, 2, 1, 2],
+        [2, 1, 2, 1, 2, 1, 2],
+        [1, 2, 1, 2, 1, 2, 1],
+        [1, 2, 1, 2, 1, 2, 1],
     ])
     
     assert state.check_game_end() is True
