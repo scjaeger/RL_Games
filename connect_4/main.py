@@ -15,7 +15,8 @@ if __name__ == "__main__":
     sj_root = Node(None, state)
     
     # initialize player
-    name_2 = "Random Randy" # enter losing player here ;)
+    name_2 = "ai_2" # enter losing player here ;)
+    ai2_root = Node(None, state)
     
     # shuffle players to randomize start
     players = [name_1, name_2]
@@ -67,12 +68,22 @@ if __name__ == "__main__":
             
             # start player algorithm, updating the game state
             elif player == name_2:
+                # update game information
                 round += 1
+                player_num = state.player
                 
-                action = random.choice(state.get_actions())     # < -- delete
+                # make turn
+                ai2_root, stats = mcts(ai2_root, state)
                 
-                state = state.perform_action(action)            # <-- Enter algorithm here
+                # feed statistics
+                game_stats[player_num]["unexplored nodes"].append(stats["unexplored children"])
+                game_stats[player_num]["time left"].append(stats["time left"])
+                game_stats[player_num]["loops"].append(stats["loops"])
                 
+                # update state
+                state = ai2_root.state
+                
+                # plot current state
                 plot_turn(state, game_stats, round)
             
             if state.game_over:

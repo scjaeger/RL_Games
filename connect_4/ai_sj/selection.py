@@ -4,16 +4,6 @@ import numpy as np
 import random
 
 
-def choose_random(node: Node) -> Node:
-    
-    action = random.choice(node.edges)
-    node.edges.remove(action)
-    
-    state = node.state.perform_action(action)
-    new_node = Node(node, state)
-    node.children.append(new_node)
-    return new_node
-
 
 def calculate_uct(children: "list[Node]", total_tests: int,  c: float = np.sqrt(2)) -> np.array:
     try:
@@ -51,25 +41,32 @@ def choose_uct(node: Node) -> Node:
     
 def select_node(node: Node) -> Node:
     try:
-        depth = 1
-        if node.edges:
-            # print(f"depth: {depth}")
-            return choose_random(node)
-        
-        else:
-            while get_valid_children(node):
-                depth += 1
+        if not node.explored:
+            while not node.edges:
                 node = choose_uct(node)
-                
-            if node.edges:
-                # print(f"depth: {depth}")
-                return choose_random(node)
-            else:
-                return False
+            
+            return node
+
+        else:
+           return False
             
     except Exception as error:
         print(f"Error in select_node --> {error}")
         return False
 
         
-        
+if __name__ == "__main__":
+    from game.state import State
+    from ai_sj.expansion import choose_random
+    
+    state = State(player = 1)
+    
+    root = Node(None, state)
+    
+    node = select_node(root)
+    
+    print(root == node)
+    
+    new_node = choose_random(node)
+    
+    print(root.children[0] == new_node)

@@ -1,6 +1,7 @@
 from game.state import State
 from game.node import Node
 from ai_sj.selection import select_node
+from ai_sj.expansion import choose_random
 from ai_sj.simulation import simulate
 from ai_sj.backpropagation import backpropagate
 from utils.utils import get_valid_children, get_children_tests, get_children_wins
@@ -61,6 +62,9 @@ def get_fav_child(root: Node) -> Node:
         
         else:
             children = counter_opponent(root)
+            
+            if not children:
+                children = root.children
 
             top_node = choose_by_mean(children)
             
@@ -98,8 +102,8 @@ def mcts(node: Node, state: State, calc_time: float = 1.0, safety_factor: float 
     while True:
         loops += 1
         node = select_node(root)
-
         if node:
+            node = choose_random(node)
             winner = simulate(node.state)
             backpropagate(node, winner)
         
@@ -121,23 +125,23 @@ def mcts(node: Node, state: State, calc_time: float = 1.0, safety_factor: float 
 if __name__ == "__main__":
     state = State(player = 1)
     
-    state.board = np.array([
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [1, 0, 1, 1, 2, 2, 2],
-            ])
-    
     # state.board = np.array([
-    #         [0, 0, 1, 2, 2, 1, 1],
-    #         [0, 0, 2, 1, 1, 2, 2],
-    #         [2, 1, 2, 2, 2, 1, 1],
-    #         [2, 1, 2, 1, 1, 2, 2],
-    #         [1, 2, 1, 2, 2, 1, 1],
-    #         [1, 1, 2, 2, 1, 2, 2],
+    #         [0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0],
+    #         [1, 0, 1, 1, 2, 2, 2],
     #         ])
+    
+    state.board = np.array([
+            [0, 0, 1, 2, 2, 1, 1],
+            [0, 0, 2, 1, 1, 2, 2],
+            [2, 1, 2, 2, 2, 1, 1],
+            [2, 1, 2, 1, 1, 2, 2],
+            [1, 2, 1, 2, 2, 1, 1],
+            [1, 1, 2, 2, 1, 2, 2],
+            ])
     
     root = Node(None, state)
     

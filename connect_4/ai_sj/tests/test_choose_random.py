@@ -1,6 +1,6 @@
 from game.state import State
 from game.node import Node
-from ai_sj.selection import choose_random
+from ai_sj.expansion import choose_random
 import numpy as np
 
 
@@ -50,6 +50,7 @@ def test_choose_random_delete_edge():
     final_actions = len(node.edges)
     
     assert final_actions == initial_actions -1
+    assert len(node.children) == 1
     
 if __name__ == "__main__":
     test_choose_random_one_left()
