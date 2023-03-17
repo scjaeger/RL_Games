@@ -1,12 +1,16 @@
 from game.node import Node
+from utils.utils import get_valid_children
 
 def update_exploration_status(node: Node)-> bool:
     try:
-        children = [child for child in node.children if not child.explored]
-        if node.edges or children:
-            return False
-        else:
+        if node.state.winner or node.state.game_over:
             return True
+        else:
+            children = get_valid_children(node)
+            if node.edges or children:
+                return False
+            else:
+                return True
     
     except Exception as error:
         print(f"Error in backpropagation.update_exploration_status --> {error}")
@@ -23,12 +27,13 @@ def backpropagate(node: Node, winner: int) -> None:
             
             if winner == 0:
                 node.times_won += 0.3
-            elif node.state.change_player() == winner:
+            elif node.state.player == winner:
                 node.times_won += 1
                 
             node = node.parent
             
         node.times_tested += 1
+        node.explored = update_exploration_status(node)
         
     except Exception as error:
         print(f"Error in backpropagation.backpropagate --> {error}")
@@ -39,17 +44,4 @@ def backpropagate(node: Node, winner: int) -> None:
 
 
 if __name__ == "__main__":
-    from game.state import State
-    import numpy as np 
-    
-    state = State(player=1)
-    state.board = np.array([
-        [1, 0, 1],
-        [2, 0, 2],
-        [0, 0, 0],
-    ])
-    
-    state = state.perform_action((0, 1))
-    
-    print(state.game_over)
-    print(state.winner)
+    pass
