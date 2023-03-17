@@ -20,10 +20,10 @@ def plot_board(players: "list[str]", board: np.array, ax: plt.axes):
     
     rgb = np.dstack((r, g, b))
     
-    ax.axvline(0.5, color = "black")
-    ax.axvline(1.5, color = "black")
-    ax.axhline(0.5, color = "black")
-    ax.axhline(1.5, color = "black")
+    for i in range(6):
+        ax.axvline(i + 0.5, color = "black")
+    for i in range(5):
+        ax.axhline(i + 0.5, color = "black")
 
     ax.set_title(f"{players[0]} in red, {players[1]} in blue")
     
@@ -31,30 +31,22 @@ def plot_board(players: "list[str]", board: np.array, ax: plt.axes):
     
     return None
 
-def plot_stats(game_stats: dict, ax: plt.axes):
-    # unexplored nodes
-    ax[1].set_title("unexplored nodes")
-    nodes_1 = game_stats[1]["unexplored nodes"]
-    ax[1].plot(nodes_1, label = game_stats[1]['name'], color = "red")
-    nodes_2 = game_stats[2]["unexplored nodes"]
-    ax[1].plot( nodes_2, label = game_stats[2]['name'], color = "blue")
-    ax[1].legend()
+def make_bar_plot(game_stats: dict, stat_name: str, ax: plt.axes):
     
-    # time left 
-    ax[2].set_title("time left")
-    nodes_1 = game_stats[1]["time left"]
-    ax[2].plot(nodes_1, label = game_stats[1]['name'], color = "red")
-    nodes_2 = game_stats[2]["time left"]
-    ax[2].plot( nodes_2, label = game_stats[2]['name'], color = "blue")
-    ax[2].legend()
-    
-    # loops 
-    ax[3].set_title("Exploration loops per turn")
-    nodes_1 = game_stats[1]["loops"]
-    ax[3].plot(nodes_1, label = game_stats[1]['name'], color = "red")
-    nodes_2 = game_stats[2]["loops"]
-    ax[3].plot( nodes_2, label = game_stats[2]['name'], color = "blue")
-    ax[3].legend()
+    ax.set_title(stat_name)
+    for i, color, shift in zip([1, 2], ["red", "blue"], [- 0.2, 0.2]):
+        if i == 2:
+            color = "red"
+        else:
+            color = "blue"
+            
+        stat = game_stats[i][stat_name]
+        X_axis = np.arange(len(stat))
+        ax.bar(X_axis + shift, stat, 0.4, label = game_stats[i]["name"], color = color, alpha = 0.5)
+        
+    ax.legend()
+
+
 
 def plot_turn(state: State, game_stats: dict, round: int):
     
@@ -64,10 +56,13 @@ def plot_turn(state: State, game_stats: dict, round: int):
     
     plot_board([game_stats[1]['name'], game_stats[2]['name']], state.board, ax[0])
     
-    plot_stats(game_stats, ax)
+    make_bar_plot(game_stats, "unexplored nodes", ax[1])
+    make_bar_plot(game_stats, "time left", ax[2])
+    make_bar_plot(game_stats, "loops", ax[3])
+
     
     plt.savefig(f"game_stats/round{round}")
-
+    plt.close(fig)
     
     
 if __name__ == "__main__":

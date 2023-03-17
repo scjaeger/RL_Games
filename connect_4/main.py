@@ -1,7 +1,6 @@
 from game.state import State
 from game.node import Node
 from ai_sj.mcts import mcts
-import matplotlib.pyplot as plt
 import random
 from utils.utils import plot_turn
 

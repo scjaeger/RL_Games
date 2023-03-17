@@ -1,10 +1,9 @@
-from game.node import Node
+from game.state import State
 import random
 
-def simulate(node: Node, show_steps: bool = False) -> int:
+def simulate(state: State, show_steps: bool = False) -> int:
     
     try:
-        state = node.state
 
         while not state.winner and not state.game_over:
             action = random.choice(state.get_actions())
@@ -26,16 +25,3 @@ def simulate(node: Node, show_steps: bool = False) -> int:
         print(f"Error in simulate --> {error}")
         return False
 
-
-
-if __name__ == "__main__":
-    from game.state import State
-    import numpy as np
-    state = State(player = 1)
-    
-    state.winner = None
-    state.game_over = True
-    
-    node = Node(None, state)
-    
-    print(simulate(node))
