@@ -52,7 +52,22 @@ class State():
             return False
         
 
-
+    def is_equal(self, state) -> bool:
+        
+        if isinstance(state, State):
+        
+            board_check = np.array_equal(self.board, state.board)
+            player_check = self.player == state.player
+            win_check = self.winner == state.winner
+            end_check = self.game_over == state.game_over
+            if board_check and player_check and win_check and end_check:
+                return True
+            else:
+                return False
+            
+        else:
+            print("Type Error in State.is_equal")
+            return None
     
     
     def check_win(self) -> int:
@@ -79,6 +94,7 @@ class State():
         if self.winner:
             return True
         elif 0 not in self.board:
+            self.winner = 0
             return True
         else:
             return False
