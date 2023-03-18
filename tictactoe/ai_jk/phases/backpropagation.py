@@ -1,6 +1,6 @@
 
 def start_backpropagation_phase(node, state):
-    winner = state.get_winner()
+    winner = state.winner
 
     do_backpropagation(node, state, winner)
     
@@ -16,6 +16,8 @@ def do_backpropagation(node, state, winner):
         subtree_is_fully_expanded(node)
         node = node.parent
 
+    if node.parent == None:
+        node.visits +=1
 
 def subtree_is_fully_expanded(node):
     is_fully_expanded = True

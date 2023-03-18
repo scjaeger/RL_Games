@@ -10,7 +10,7 @@ def start_simulation_phase(node):
 
 
 def is_leaf(node):
-    if (node.state.check_game_end()):
+    if (node.state.game_over):
         node.is_leaf = True
         node.subtree_fully_expanded = True
         return True

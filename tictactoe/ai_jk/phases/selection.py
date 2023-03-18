@@ -1,15 +1,17 @@
 from ai_jk.mcts.Node import Node
 
 
-
 def start_selection_phase(node):
-    while(node.is_fully_expanded):
-        scores = get_uct_scores(node)
-        index = get_best_uct_node_index(scores)
-        node = node.children[index]    
+    try:
+        while(node.is_fully_expanded):
+            scores = get_uct_scores(node)
+            index = get_best_uct_node_index(scores)
+            node = node.children[index]    
 
-    return node
-
+        return node
+    except:
+        print(node.state.board)
+        print(node.children)
 
 def get_uct_scores(node):
     scores = []

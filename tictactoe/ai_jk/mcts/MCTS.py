@@ -12,13 +12,22 @@ class MCTS():
         self.root = None
 
     def do_mcts(self, state):
-        root = Node(None, state, None)
+        self.root = Node(None, state, 2)
+        print(self.root)
+        counter = 0
+        while (counter < 100):
+            node = start_selection_phase(self.root)
+            node = start_expansion_phase(node)
+            node, state = start_simulation_phase(node)
+            start_backpropagation_phase(node, state)
+            counter += 1
 
+        '''
         t = time.process_time()
         elapsed_time = 0
 
         while (elapsed_time <= 1):
-            node = start_selection_phase(root)
+            node = start_selection_phase(self.root)
             node = start_expansion_phase(node)
             node, state = start_simulation_phase(node)
             start_backpropagation_phase(node, state)
@@ -26,9 +35,10 @@ class MCTS():
             elapsed_time = time.process_time() - t
 
         node = self.get_best_child()
-
+        '''
+        print(self.root.children)
         return node.state
-
+        
 
     def is_initial_root_state(self, state):
         pass
@@ -37,9 +47,10 @@ class MCTS():
         pass
         #state.compare needed
 
-    def get_best_child(self):    
+    def get_best_child(self):
         scores = []
         for index, node in enumerate(self.root.children):
+            print(node.value, node.visits)
             score = node.get_exploitation_score()
             scores.append([score, index])
 
