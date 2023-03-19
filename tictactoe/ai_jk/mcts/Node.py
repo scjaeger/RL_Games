@@ -8,6 +8,7 @@ class Node:
         self.player = player
         self.actions = []
         self.children = []
+        self.initiated = False
         self.is_fully_expanded = False
         self.is_leaf = False
         self.subtree_fully_expanded = False

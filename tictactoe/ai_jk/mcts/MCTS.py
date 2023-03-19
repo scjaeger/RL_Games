@@ -13,14 +13,23 @@ class MCTS():
 
     def do_mcts(self, state):
         self.root = Node(None, state, 2)
-        print(self.root)
+        print("Root: ", self.root)
+        print("-----------------------------------------------")
         counter = 0
-        while (counter < 100):
+        while (counter < 10):
+            print("Counter: ", counter)
+            print("Root fully expanded: ", self.root.is_fully_expanded)
             node = start_selection_phase(self.root)
+            print("Selection: ", counter, node)
+            print("Node actions: ", node.actions)
+            print("Node chidlren: ", node.children)
             node = start_expansion_phase(node)
+            print("Expansion: ", counter, node)
+            print(node.state.board)
             node, state = start_simulation_phase(node)
             start_backpropagation_phase(node, state)
             counter += 1
+            print("-----------------------------------------------")
 
         '''
         t = time.process_time()
@@ -65,11 +74,11 @@ if __name__ == "__main__":
     import numpy as np
     state = State(player = 1)
     state.board = np.array([
+        [1, 2, 2],
+        [2, 1, 0],
         [1, 0, 0],
-        [2, 0, 0],
-        [0, 0, 0],
     ])
 
     mcts = MCTS()
     state = mcts.do_mcts(state)
-    print(state)
+    print(state.board)
