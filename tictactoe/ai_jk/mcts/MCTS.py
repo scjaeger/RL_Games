@@ -26,7 +26,7 @@ class MCTS():
             start_backpropagation_phase(node, state)
             elapsed_time = time.process_time() - t
 
-        node = self.get_best_child()
+        node = self.get_final_move()
         self.root = node
         return node.state
 
@@ -39,9 +39,39 @@ class MCTS():
                 if node.state.is_equal(state):
                     node.parent = None
                     return node
-                else:
-                    return Node(None, state, state.player)
-            
+        
+        return Node(None, state, state.player)
+    
+    def get_final_move(self):
+        node_winner = self.get_winning_move()
+        node_blocking = self.block_losing_move()
+
+        if node_winner:
+            print("winner")
+            return node_winner
+        elif node_blocking:
+            print("blocking")
+            return node_blocking
+        else:
+            print("best_child")
+            return self.get_best_child()
+
+
+    def get_winning_move(self):
+        for node in self.root.children:
+            if node.state.winner == self.player:
+                return node
+        return None
+
+    ##### Last step, how to perform look-a-head-move
+    def block_losing_move(self):
+        player = self.root.state.player
+
+        for node in self.root.children:
+            if node.state.winner == player:
+                return node
+        return None
+
 
     def get_best_child(self):
         scores = []
