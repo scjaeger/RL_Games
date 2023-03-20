@@ -1,4 +1,5 @@
 from ai_jk.mcts.Node import Node
+import math
 
 
 def start_selection_phase(node):
@@ -12,8 +13,11 @@ def start_selection_phase(node):
 
 def get_uct_scores(node):
     scores = []
-    for index, node in enumerate(node.children):
-        score = node.get_UCT_score()
+    for index, child in enumerate(node.children):
+        if child.subtree_fully_expanded:
+            score = -math.inf
+        else:
+            score = child.get_UCT_score()
         scores.append([score, index])
 
     return scores

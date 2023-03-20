@@ -3,15 +3,13 @@ import random
 def start_simulation_phase(node):
     if is_leaf(node):
         return node, node.state
-        
-    state = do_simulation(node)
-
-    return node, state
+    else:
+        state = do_simulation(node)
+        return node, state
 
 
 def is_leaf(node):
     if (node.state.game_over):
-        node.is_leaf = True
         node.subtree_fully_expanded = True
         return True
     else:

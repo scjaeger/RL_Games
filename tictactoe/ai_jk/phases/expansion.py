@@ -3,6 +3,7 @@ from ai_jk.mcts.Node import Node
 def start_expansion_phase(node):
     first_node_initiation(node)
     if is_expandable(node):
+        node.is_leaf = False
         action = choose_action(node)
         check_node_expanded(node)
         node = do_node_expansion(node, action)
@@ -30,7 +31,7 @@ def choose_action(node):
 
 def do_node_expansion(node, action):
     new_state = node.state.perform_action(action)
-    new_player = node.change_player()
+    new_player = node.state.change_player()
     new_node = Node(node, new_state, new_player)
     node.children.append(new_node)
     return new_node

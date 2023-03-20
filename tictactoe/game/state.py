@@ -34,10 +34,9 @@ class State():
             row, col = action
             if self.board[row, col] == 0:     
                 new_board = self.board.copy()
-                new_board[row, col] = self.player
-                
                 player = self.change_player()
-                
+                new_board[row, col] = player
+                               
                 return State(new_board, player) 
             
             else:
