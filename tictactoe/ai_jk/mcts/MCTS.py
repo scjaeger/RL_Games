@@ -30,20 +30,6 @@ class MCTS():
         self.root = node
         return node.state
     
-        '''
-        print(self.root.state.board)
-        print(self.root.children)
-        print("-------------------------------")
-        for child in self.root.children:
-            print (child.state.board)
-            print("#####")
-            for child2 in child.children:
-                print(child2.state.board)
-
-            print("-------------------------------")
-        
-        return None
-        '''
 
     def find_state_in_tree(self, state):
         if self.root == None:

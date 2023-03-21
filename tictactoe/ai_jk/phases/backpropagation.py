@@ -26,7 +26,7 @@ def subtree_is_fully_expanded(node):
                 is_fully_expanded = False
         
         node.subtree_fully_expanded = is_fully_expanded
-    
+
 
 if __name__ == "__main__":
     pass
