@@ -1,7 +1,7 @@
 import time
 from ai_jk.mcts.Node import Node
 from ai_jk.phases.selection import start_selection_phase
-from ai_jk.phases.expansion import start_expansion_phase
+from ai_jk.phases.expansion import start_expansion_phase, start_single_full_expansion
 from ai_jk.phases.simulation import start_simulation_phase
 from ai_jk.phases.backpropagation import start_backpropagation_phase
 
@@ -14,7 +14,7 @@ class MCTS():
 
     def do_mcts(self, state):
         self.root = self.find_state_in_tree(state)
-        #self.root = Node(None, state, state.player)
+        self.build_lookahead_tree()
         
         t = time.process_time()
         elapsed_time = 0
@@ -29,7 +29,21 @@ class MCTS():
         node = self.get_final_move()
         self.root = node
         return node.state
+    
+        '''
+        print(self.root.state.board)
+        print(self.root.children)
+        print("-------------------------------")
+        for child in self.root.children:
+            print (child.state.board)
+            print("#####")
+            for child2 in child.children:
+                print(child2.state.board)
 
+            print("-------------------------------")
+        
+        return None
+        '''
 
     def find_state_in_tree(self, state):
         if self.root == None:
@@ -41,6 +55,18 @@ class MCTS():
                     return node
         
         return Node(None, state, state.player)
+    
+
+    def build_lookahead_tree(self):
+        start_single_full_expansion(self.root)
+        for child1 in self.root.children:
+            start_single_full_expansion(child1)
+
+        for child1 in self.root.children:
+            start_backpropagation_phase(child1, child1.state)
+            for child2 in child1.children:
+                start_backpropagation_phase(child2, child2.state)
+
     
     def get_final_move(self):
         node_winner = self.get_winning_move()
@@ -63,14 +89,27 @@ class MCTS():
                 return node
         return None
 
-    ##### Last step, how to perform look-a-head-move
+
     def block_losing_move(self):
         player = self.root.state.player
+        length = len(self.root.children)
+        indices = []
+        for index, child1 in enumerate(self.root.children):
+            for child2 in child1.children:
+                if child2.state.winner == player:
+                    indices.append(index)
 
-        for node in self.root.children:
-            if node.state.winner == player:
-                return node
-        return None
+        indices.reverse()
+
+        for index in indices:
+            self.root.children.pop(index)
+
+        if (len(indices) == length):
+            return None
+        elif self.root.children:
+            return self.root.children[0]
+        else:
+            return None
 
 
     def get_best_child(self):
